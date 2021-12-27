@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# Usage: shimmer rehash
+# Summary: Create any missing bin commands from downloaded packages with executables (bin)
+
+set -e
+
+if [ "$1" = "--complete" ]; then
+    exit
+fi
+
+SHIMMER_PACKAGES_DIR=$_SHIMMER_ROOT/packages
+
+SHIMS_DIR=$_SHIMMER_ROOT/shims
+
+function generate_shim() {
+    local libdir=$1
+    local binname=$2
+
+    binname=$(basename $binname)
+    local libname=$(basename $libdir) # just the name of the lib (implicitly includes versioning info)
+    [ -n "$_SHIMMER_CLI_TEST" ] && echo $binname, $libname && return 0
+
+    if [ ! -f $SHIMS_DIR/$binname ]; then
+        ln -s $_SHIMMER_ROOT/libexec/shim $SHIMS_DIR/$binname
+        mkdir -p $SHIMS_DIR/.index/$binname
+    fi
+    touch $SHIMS_DIR/.index/$binname/$libname
+}
+
+for lib in $SHIMMER_PACKAGES_DIR/*/; do
+    lib=${lib%*/} # remove trailing slash so the line below looks a bit cleaner
+    for bin in $lib/bin/*; do
+        generate_shim $lib $bin
+    done
+done

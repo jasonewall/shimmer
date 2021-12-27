@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+_IVY_ROOT=$(ivy root)
+
+command=$(basename $0)
+
+versions=( $(ls $_IVY_ROOT/shims/.index/$command) )
+
+if [ ${#versions[@]} -eq 1 ]; then
+    $_IVY_ROOT/packages/${versions[0]}/bin/$command $*
+else
+    echo "Multiple versions can execute $command. IDK what to do :("
+fi

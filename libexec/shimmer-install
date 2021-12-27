@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+# Usage: shimmer install <package path>
+# Summary: Copies the package at the given path into the shimmer managed packages list and creates shims for all binaries in that package.
+
+set -e
+
+# Provide shimmer completions
+if [ "$1" = "--complete" ]; then
+    shift
+    echo --verbose
+    ls -d $**
+    exit
+fi
+
+function _install_package() {
+    local package=$1
+    local opts='-r'
+
+    if [ -n "$verbose" ]; then
+        opts="${opts}v"
+    fi
+
+    fqp=`cd "$package" > /dev/null && pwd`
+
+    cp $opts $fqp $_SHIMMER_ROOT/packages
+
+    echo "Package $package successfully added to shimmer packages list."
+}
+
+for a in "$@"; do
+    if [ "$a" = "--verbose" ]; then
+        verbose=yes
+    fi
+done
+
+for package in "$@"; do
+    if [ "$package" = "--verbose" ]; then
+        continue
+    fi
+
+    _install_package $package
+done
+
+echo "Package(s) installed. Rehashing..."
+
+shimmer rehash
