@@ -28,6 +28,9 @@ case "$command" in
 "" | "-h" | "--help" )
   exec shimmer-help
   ;;
+"root")
+  echo $_SHIMMER_ROOT
+  ;;
 * )
   command_path="$(command -v "shimmer-$command" || true)"
   if [ ! -x "$command_path" ]; then
