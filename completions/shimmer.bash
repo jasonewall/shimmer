@@ -6,7 +6,7 @@ _shimmer() {
     COMPREPLY=( $(compgen -W "$(shimmer commands)" -- "$word") )
   else
     local command="${COMP_WORDS[1]}"
-    local completions="$(shimmer completions "$command")"
+    local completions="$(shimmer completions "$command" ${COMP_WORDS[@]:2})"
     COMPREPLY=( $(compgen -W "$completions" -- "$word") )
   fi
 }
