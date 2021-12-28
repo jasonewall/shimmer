@@ -56,7 +56,7 @@ if [ -z "$print" ]; then
 fi
 
 echo "export PATH=\"\${PATH}:${_SHIMMER_ROOT}/bin\""
-echo "export PATH=\"\${PATH}:${_SHIMMER_SHIM_DIR}\""
+echo "export PATH=\"\${PATH}:${_SHIMMER_SHIMS_DIR}\""
 
 case "$shell" in
 bash | zsh )
