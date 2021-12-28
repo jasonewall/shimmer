@@ -21,6 +21,8 @@ abs_dirname() {
 
 libexec_path="$(abs_dirname "$0")"
 export _SHIMMER_ROOT="$(abs_dirname "$libexec_path")"
+export _SHIMMER_PACKAGES_DIR=$_SHIMMER_ROOT/packages
+export _SHIMMER_SHIMS_DIR=$_SHIMMER_ROOT/shims
 export PATH="${libexec_path}:$PATH"
 
 command="$1"

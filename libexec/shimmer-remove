@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# Usage: shimmer remove-package <package name(s)>
+# Summary: Removes a package installed via `shimmer install package` and any related shims, if they can be removed
+
+set -e
+
+# Provide shimmer completions
+if [ "$1" = "--complete" ]; then
+    ls $_SHIMMER_PACKAGES_DIR
+    exit
+fi
+
+
+function _remove_package() {
+    package=$1
+
+    if [ ! -d $_SHIMMER_PACKAGES_DIR/$package ]; then
+        echo "Don't recognize $package as an installed package. Aborting"
+        return 1
+    fi
+
+    for bin in $_SHIMMER_PACKAGES_DIR/$package/bin/*; do
+        binname=$(basename $bin)
+        rm -f $_SHIMMER_SHIMS_DIR/.index/$binname/$package
+        set +e
+        versions=( $(ls $_SHIMMER_SHIMS_DIR/.index/$binname 2> /dev/null) )
+        set -e
+        if [ ${#versions[@]} -eq 0 ]; then
+            rm -rf $_SHIMMER_SHIMS_DIR/.index/$binname
+            rm -f $_SHIMMER_SHIMS_DIR/$binname
+        fi
+    done
+
+    rm -r $_SHIMMER_PACKAGES_DIR/$package
+
+    echo "Successfully remove package $package"
+}
+
+for package in "$@"; do
+    _remove_package $package
+done
